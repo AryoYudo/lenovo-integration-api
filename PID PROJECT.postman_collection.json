@@ -1,0 +1,382 @@
+{
+	"info": {
+		"_postman_id": "ca0e5cd6-0da8-4e5e-8cae-4e10ec948afd",
+		"name": "PID PROJECT",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "16549043"
+	},
+	"item": [
+		{
+			"name": "AUTH",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"test\", \r\n    \"password\": \"11\",\r\n    \"device_name\": \" DSY_Test_1002\",\r\n    \"station_name\": \"Autoscrew\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8080/sfis/login",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"sfis",
+								"login"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "Token method",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"badge_id\": \"\", \r\n    \"password\": \"\",\r\n    \"qr_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjNmE0N2FlLWYyYTktNGJhZi1hMTFlLTQzOTE3MzIxYTgzZCIsImJhZGdlX2lkIjpudWxsLCJmdWxsbmFtZSI6bnVsbCwiZXhwIjoxNzI5MjM2NzcwfQ.5jkCpdf9VPO9zRy2_ZURJmecuLFgeyevsTJCgfsSklg\" // login with temporary token login\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URLLOCAL}}/api/auth/login",
+									"host": [
+										"{{URLLOCAL}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"login"
+									]
+								}
+							},
+							"_postman_previewlanguage": "Text",
+							"header": [],
+							"cookie": [],
+							"body": ""
+						},
+						{
+							"name": "Normal login",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"badge_id\": \"200539\", \r\n    \"password\": \"Passw0rd\",\r\n    \"qr_token\": \"\" // login with temporary token login\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URLLOCAL}}/api/auth/login",
+									"host": [
+										"{{URLLOCAL}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"login"
+									]
+								}
+							},
+							"_postman_previewlanguage": "Text",
+							"header": [],
+							"cookie": [],
+							"body": ""
+						},
+						{
+							"name": "success",
+							"originalRequest": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"badge_id\": \"200539\", \r\n    \"password\": \"Passw0rd\"\r\n\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URLUAT}}/api/auth/login",
+									"host": [
+										"{{URLUAT}}"
+									],
+									"path": [
+										"api",
+										"auth",
+										"login"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Date",
+									"value": "Fri, 25 Oct 2024 07:13:07 GMT"
+								},
+								{
+									"key": "Server",
+									"value": "WSGIServer/0.2 CPython/3.8.10"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "DENY"
+								},
+								{
+									"key": "Content-Length",
+									"value": "703"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "Referrer-Policy",
+									"value": "same-origin"
+								},
+								{
+									"key": "Cross-Origin-Opener-Policy",
+									"value": "same-origin"
+								},
+								{
+									"key": "Vary",
+									"value": "origin"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"status_code\": 200,\n    \"message\": \"Berhasil masuk!\",\n    \"messagetype\": \"S\",\n    \"data\": {\n        \"user_badge\": \"200539\",\n        \"user_name\": \"Andria Gutama\",\n        \"is_active\": true,\n        \"user_uuid\": \"5c6a47ae-f2a9-4baf-a11e-43917321a83d\",\n        \"accessToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiNWM2YTQ3YWUtZjJhOS00YmFmLWExMWUtNDM5MTczMjFhODNkIiwiYmFkZ2Vfbm8iOiIyMDA1MzkiLCJmdWxsbmFtZSI6IkFuZHJpYSBHdXRhbWEiLCJleHAiOjE3Mjk5MTIzODd9.y9LELin0yoluyo5vrA3S6O0EAIyNR_ie8NVDEokRT4A\",\n        \"refreshToken\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1dWlkIjoiNWM2YTQ3YWUtZjJhOS00YmFmLWExMWUtNDM5MTczMjFhODNkIiwiYmFkZ2Vfbm8iOiIyMDA1MzkiLCJmdWxsbmFtZSI6IkFuZHJpYSBHdXRhbWEiLCJleHAiOjE3MzAwMTMxODd9.1aXX-Pymna988gK8LPe6-WUR3qJTfjaP0hQx6SHuzJg\"\n    }\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "BATCH",
+			"item": [
+				{
+					"name": "Post Route Batch",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "38990ce2d9bde12b43b82afbcdd4714e99257867",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"key_item\": \"P45001412546AD24072000000098\",\r\n  \"device_name\": \"DSY_Test_1001\",\r\n  \"station_name\": \"ISN_INPUT\",\r\n  \"is_pass\": true,\r\n  \"log_path\": \"\\\\\\\\192.168.10.253\\\\SharedFolder\\\\logs\\\\M19A_ID_IDLE_K\\\\20231103\\\\457739716.txt\",\r\n  \"save_data\": [\r\n    {\r\n      \"data_name\": \"ISN\",\r\n      \"data_value\": [\r\n        {\r\n          \"data_name\": \"ISN\",\r\n          \"scan_item\": \"P45001412546AD24072000000098\",\r\n          \"save_data\": []\r\n        },\r\n        {\r\n          \"data_name\": \"ISN\",\r\n          \"scan_item\": \"P45001412546AD24072000000097\",\r\n          \"save_data\": []\r\n        },\r\n        {\r\n          \"data_name\": \"ISN\",\r\n          \"scan_item\": \"P45001412546AD24072000000093\",\r\n          \"save_data\": []\r\n        },\r\n        {\r\n          \"data_name\": \"ISN\",\r\n          \"scan_item\": \"P45001412546AD24072000000082\",\r\n          \"save_data\": []\r\n        }\r\n      ]\r\n    }\r\n  ],\r\n  \"work_order_no\": \"2403ZPRDA0001\",\r\n  \"scan_item\": \"P45001412546AD24072000000098\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8080/sfis/batch/insert_incoming_part",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"sfis",
+								"batch",
+								"insert_incoming_part"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post Check Rote Bacth",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "38990ce2d9bde12b43b82afbcdd4714e99257867",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"scan_item\": \"P45001412546AD24072000000098\",\r\n    \"data_name\": \"ISN\",\r\n    \"device_name\": \"DSY_Test_1001\",\r\n    \"station_name\": \"ISN_INPUT\",\r\n    \"save_data\": [\r\n        {\r\n            \"data_name\": \"ISN\",\r\n            \"data_value\": [\r\n                {\r\n                    \"data_name\": \"ISN\",\r\n                    \"scan_item\": \"P45001412546AD24072000000098\",\r\n                    \"save_data\": []\r\n                },\r\n                {\r\n                    \"data_name\": \"ISN\",\r\n                    \"scan_item\": \"P45001412546AD24072000000097\",\r\n                    \"save_data\": []\r\n                },\r\n                {\r\n                    \"data_name\": \"ISN\",\r\n                    \"scan_item\": \"P45001412546AD24072000000093\",\r\n                    \"save_data\": []\r\n                },\r\n                {\r\n                    \"data_name\": \"ISN\",\r\n                    \"scan_item\": \"P45001412546AD24072000000082\",\r\n                    \"save_data\": []\r\n                }\r\n            ]\r\n        }\r\n    ]\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8080/sfis/batch/insert_check_route_batch",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"sfis",
+								"batch",
+								"insert_check_route_batch"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post Incoming Part",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "38990ce2d9bde12b43b82afbcdd4714e99257867",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n \"scan_item\": \"P45001412546AD24072000000098\",\r\n \"data_name\":\"ISN\",\r\n \"qty_per_batch\": 4\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8080/sfis/batch/insert_test_result_batch",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"sfis",
+								"batch",
+								"insert_test_result_batch"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "PCB",
+			"item": [
+				{
+					"name": "Post Test Result",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"key_item\": \"P45001412546AD24072000000098\",\r\n    \"station_name\": \"ISN_INPUT\",\r\n    \"device_name\": \"DSY_Test_1001\",\r\n    \"is_pass\": \"True\",\r\n    \"error_code\": \"0\",\r\n    \"log_path\": \"\\\\\\\\192.168.10.253\\\\SharedFolder\\\\logs\\\\M19A_ID_IDLE_K\\\\20231103\\\\457739716.txt\",\r\n    \"log_data\": \"Test completed successfully. No errors detected.\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8080/sfis/insert_test/insert_test_result",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"sfis",
+								"insert_test",
+								"insert_test_result"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post Check Route",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"scan_item\" : \"P45001412546AD24072000000098\",\r\n    \"data_name\" : \"ISN\",\r\n    \"device_name\" : \"DSY_Test_1001\",\r\n    \"station_name\" : \"ISN_INPUT\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://127.0.0.1:8080/sfis/check_route/insert_check_router",
+							"protocol": "http",
+							"host": [
+								"127",
+								"0",
+								"0",
+								"1"
+							],
+							"port": "8080",
+							"path": [
+								"sfis",
+								"check_route",
+								"insert_check_router"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
