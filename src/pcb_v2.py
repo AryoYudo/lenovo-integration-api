@@ -1,5 +1,6 @@
 from fastapi import HTTPException, Request, APIRouter
 from fastapi.responses import JSONResponse
+import json
 
 from src.config import LOGIN, INSERT_RESULT_PCB, INSERT_CHECK_PCB, INSERT_INCOMING_PART_BATCH, CHECK_ROUTE_BATCH, INSERT_TEST_RESULT_BATCH, GET_VERSION
 from src.config import USERNAME, PASSWORD
