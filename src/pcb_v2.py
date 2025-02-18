@@ -22,9 +22,9 @@ def mes_api_call_wrapper(url, json, headers=None):
     print('[API OUTPUT]', mes_resp.text)
     if mes_resp.status_code != 200:
         try:
-            error_msg = mes_resp.json().get('message')
-        except (ValueError, KeyError):
-            error_msg = mes_resp.text
+            error_msg = f"[{url}] {mes_resp.json().get('message')}"
+        except Exception as e:
+            error_msg = f"[{url}] {mes_resp.text}"
         raise HTTPException(status_code=mes_resp.status_code, detail=error_msg)
     return mes_resp
 
