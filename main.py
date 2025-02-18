@@ -9,4 +9,4 @@ app.include_router(pcb_v2, prefix="/sfis", tags=["pcb_v2"])
 
 
 if __name__ == '__main__':
-    uvicorn.run(app, host='127.0.0.1', port=8080)
+    uvicorn.run(app, host='127.0.0.1', port=8000)
