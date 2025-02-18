@@ -1,10 +1,9 @@
-from fastapi import FastAPI, Depends, HTTPException, Request, Header, APIRouter
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import HTTPException, Request, APIRouter
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel
-from api import LOGIN, INSERT_RESULT_PCB, INSERT_CHECK_PCB, INSERT_INCOMING_PART_BATCH, CHECK_ROUTE_BATCH, INSERT_TEST_RESULT_BATCH, GET_VERSION
-from typing import List
-from config import IS_LIVE, DEVICE_NAME, STATION_NAME, USERNAME, PASSWORD
+from ultralytics.hub import login
+
+from src.config import LOGIN, INSERT_RESULT_PCB, INSERT_CHECK_PCB, INSERT_INCOMING_PART_BATCH, CHECK_ROUTE_BATCH, INSERT_TEST_RESULT_BATCH, GET_VERSION
+from src.config import IS_LIVE, USERNAME, PASSWORD
 import time
 import secrets
 import requests
@@ -33,61 +32,60 @@ def get_token(json_body):
         login_payload = {
             "username": USERNAME,
             "password": PASSWORD,
-            "device_name": DEVICE_NAME,
-            "station_name": STATION_NAME
+            "device_name": json_body.get('device_name'),
+            "station_name": json_body.get('station_name')
         }
-
+    print('LOGIN: ',login_payload)
     response = requests.post(LOGIN, json=login_payload)
+    print('LOGIN RESP:', response.content)
+    if response.status_code != 200:
+        raise HTTPException(status_code=response.status_code, detail=response.content)
 
-    if response.status_code == 200:
-        token_data = response.json()
-        token_cache["token"] = token_data.get("token")
-        token_cache["expires_at"] = time.time() + 3600  # Misal token berlaku 1 jam (3600 detik)
-        return token_cache["token"]
+    token_data = response.json()
+    token_cache["token"] = token_data.get("token")
+    token_cache["expires_at"] = int(time.time()) + 36  # Misal token berlaku 1 jam (3600 detik)
+    return token_cache["token"]
 
-    raise HTTPException(status_code=401, detail="Login failed, unable to retrieve token")
 
 @router.post("/insert_check_router")
 async def insert_check_router(request: Request):
-    try:
-        json_body = await request.json()
-        print('JSON_BODY', json_body)
-        token = get_token(json_body)
-        token_auth = 'token ' + token
-        
-        check_route = {
-            "scan_item": json_body.get("key_item"),
-            "data_name": json_body.get("data_name"),
+    json_body = await request.json()
+    print('JSON_BODY', json_body)
+    token = get_token(json_body)
+    token_auth = 'token ' + token
+
+    check_route = {
+        "scan_item": json_body.get("key_item"),
+        "data_name": json_body.get("data_name"),
+        "device_name": json_body.get("device_name"),
+        "station_name": json_body.get("station_name")
+    }
+    print('check_route', check_route)
+    checkroute_resp = requests.post(INSERT_CHECK_PCB, json=check_route, headers={"Authorization": token_auth, "Content-Type": "application/json"})
+    print('checkroute_resp', checkroute_resp.content)
+    if checkroute_resp.status_code != 200:
+        raise HTTPException(status_code=checkroute_resp.status_code, detail=checkroute_resp.content)
+
+    if checkroute_resp.json()['success']:
+        test_result = {
+            "key_item": json_body.get("key_item"),
+            "station_name": json_body.get("station_name"),
             "device_name": json_body.get("device_name"),
-            "station_name": json_body.get("station_name")
+            "is_pass": json_body.get("is_pass"),
+            "error_code": json_body.get("error_code"),
+            "log_path": json_body.get("log_path"),
+            "log_data": json_body.get("log_data"),
         }
-        print('check_route', check_route)
-        checkroute_resp = requests.post(INSERT_CHECK_PCB, json=check_route, headers={"Authorization": token_auth, "Content-Type": "application/json"})
-        print('checkroute_resp', checkroute_resp.content)
-        checkroute_resp.raise_for_status()
-        
-        if checkroute_resp.json()['success']:
-            test_result = {
-                "key_item": json_body.get("key_item"),
-                "station_name": json_body.get("station_name"),
-                "device_name": json_body.get("device_name"),
-                "is_pass": json_body.get("is_pass"),        
-                "error_code": json_body.get("error_code"),        
-                "log_path": json_body.get("log_path"),        
-                "log_data": json_body.get("log_data"),        
-            }
-            print('test_result', test_result)
-            insert_resp = requests.post(INSERT_RESULT_PCB, json=test_result, headers={"Authorization": token_auth, "Content-Type": "application/json"})
-            print('insert_resp', insert_resp.content)
-            insert_resp.raise_for_status()
+        print('test_result', test_result)
+        insert_resp = requests.post(INSERT_RESULT_PCB, json=test_result, headers={"Authorization": token_auth, "Content-Type": "application/json"})
+        print('insert_resp', insert_resp.content)
+        if insert_resp.status_code != 200:
+            raise HTTPException(status_code=insert_resp.status_code, detail=insert_resp.content)
 
-            return JSONResponse(
-                status_code=200,
-                content={"status": "success", "message": "Data successfully added to API!", "data": checkroute_resp.json()})
-    except requests.exceptions.RequestException as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        return JSONResponse(
+            status_code=200,
+            content={"status": "success", "message": "Data successfully added to API!", "data": checkroute_resp.json()})
 
- 
 
 @router.post("/insert_solder")
 async def insert_solder_maftuh(request: Request):
