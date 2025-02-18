@@ -2,7 +2,7 @@ from fastapi import HTTPException, Request, APIRouter
 from fastapi.responses import JSONResponse
 
 from src.config import LOGIN, INSERT_RESULT_PCB, INSERT_CHECK_PCB, INSERT_INCOMING_PART_BATCH, CHECK_ROUTE_BATCH, INSERT_TEST_RESULT_BATCH, GET_VERSION
-from src.config import IS_LIVE, USERNAME, PASSWORD
+from src.config import USERNAME, PASSWORD
 import time
 import secrets
 import requests
@@ -10,6 +10,24 @@ import requests
 router = APIRouter()
 secret_key = secrets.token_hex(32)
 token_cache = {"token": None, "expires_at": 0}
+
+
+def mes_api_call_wrapper(url, json, headers=None):
+    print('[CALL API]', url)
+    print('[API INPUT]', json)
+    if headers:
+        mes_resp = requests.post(url, json=json, headers=headers)
+    else:
+        mes_resp = requests.post(url, json=json)
+    print('[API OUTPUT]', mes_resp.text)
+    if mes_resp.status_code != 200:
+        try:
+            error_msg = mes_resp.json().get('message')
+        except (ValueError, KeyError):
+            error_msg = mes_resp.text
+        raise HTTPException(status_code=mes_resp.status_code, detail=error_msg)
+    return mes_resp
+
 
 def get_token(json_body):
     """Mengambil token dari cache atau login jika expired"""
@@ -19,37 +37,24 @@ def get_token(json_body):
     if token_cache["token"] and token_cache["expires_at"] > time.time():
         return token_cache["token"]
 
-    # Jika token expired atau tidak ada, lakukan login ulang
-    if not IS_LIVE:
-        login_payload = {
-            "username": "test",            
-            "password": "11",              
-            "device_name": "DSY_Test_1002", 
-            "station_name": "Autoscrew"     
-        }
-    else:
-        login_payload = {
-            "username": USERNAME,
-            "password": PASSWORD,
-            "device_name": json_body.get('device_name'),
-            "station_name": json_body.get('station_name')
-        }
-    print('LOGIN: ',login_payload)
-    response = requests.post(LOGIN, json=login_payload)
-    print('LOGIN RESP:', response.content)
-    if response.status_code != 200:
-        raise HTTPException(status_code=response.status_code, detail=response.content)
+    login_payload = {
+        "username": USERNAME,
+        "password": PASSWORD,
+        "device_name": json_body.get('device_name'),
+        "station_name": json_body.get('station_name')
+    }
+    # response = requests.post(LOGIN, json=login_payload)
+    response = mes_api_call_wrapper(LOGIN, json=login_payload)
 
     token_data = response.json()
     token_cache["token"] = token_data.get("token")
-    token_cache["expires_at"] = int(time.time()) + 36  # Misal token berlaku 1 jam (3600 detik)
+    token_cache["expires_at"] = int(time.time()) + 3600  # Misal token berlaku 1 jam (3600 detik)
     return token_cache["token"]
 
 
 @router.post("/insert_check_router")
 async def insert_check_router(request: Request):
     json_body = await request.json()
-    print('JSON_BODY', json_body)
     token = get_token(json_body)
     token_auth = 'token ' + token
 
@@ -59,11 +64,7 @@ async def insert_check_router(request: Request):
         "device_name": json_body.get("device_name"),
         "station_name": json_body.get("station_name")
     }
-    print('check_route', check_route)
-    checkroute_resp = requests.post(INSERT_CHECK_PCB, json=check_route, headers={"Authorization": token_auth, "Content-Type": "application/json"})
-    print('checkroute_resp', checkroute_resp.content)
-    if checkroute_resp.status_code != 200:
-        raise HTTPException(status_code=checkroute_resp.status_code, detail=checkroute_resp.content)
+    checkroute_resp = mes_api_call_wrapper(INSERT_CHECK_PCB, json=check_route, headers={"Authorization": token_auth, "Content-Type": "application/json"})
 
     if checkroute_resp.json()['success']:
         test_result = {
@@ -75,16 +76,10 @@ async def insert_check_router(request: Request):
             "log_path": json_body.get("log_path"),
             "log_data": json_body.get("log_data"),
         }
-        print('test_result', test_result)
-        insert_resp = requests.post(INSERT_RESULT_PCB, json=test_result, headers={"Authorization": token_auth, "Content-Type": "application/json"})
-        print('insert_resp', insert_resp.content)
-        if insert_resp.status_code != 200:
-            raise HTTPException(status_code=insert_resp.status_code, detail=insert_resp.content)
-
+        insert_resp = mes_api_call_wrapper(INSERT_RESULT_PCB, json=test_result, headers={"Authorization": token_auth, "Content-Type": "application/json"})
         return JSONResponse(
             status_code=200,
-            content={"status": "success", "message": "Data successfully added to API!", "data": checkroute_resp.json()})
-
+            content={"status": "success", "message": "Data successfully added to API!", "data": insert_resp.json()})
 
 @router.post("/insert_solder")
 async def insert_solder_maftuh(request: Request):
@@ -157,5 +152,3 @@ async def insert_solder_maftuh(request: Request):
                                          "data_incoming": response_incoming_json})
     except requests.exceptions.RequestException as e:
         raise HTTPException(status_code=400, detail=str(e))
-
-
