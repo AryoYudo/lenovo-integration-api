@@ -13,13 +13,20 @@ secret_key = secrets.token_hex(32)
 token_cache = {"token": None, "expires_at": 0}
 
 
-def mes_api_call_wrapper(url, json, headers=None):
+def mes_api_call_wrapper(url, json, headers=None, is_get=False):
     print('[CALL API]', url)
     print('[API INPUT]', json)
     if headers:
-        mes_resp = requests.post(url, json=json, headers=headers)
+        if is_get:
+            mes_resp = requests.get(url, json=json, headers=headers)
+        else:
+            mes_resp = requests.post(url, json=json, headers=headers)
     else:
-        mes_resp = requests.post(url, json=json)
+        if is_get:
+            mes_resp = requests.get(url, json=json)
+        else:
+            mes_resp = requests.post(url, json=json)
+
     print('[API OUTPUT]', mes_resp.text)
     if mes_resp.status_code != 200:
         try:
