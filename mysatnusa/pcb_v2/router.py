@@ -4,7 +4,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from api import LOGIN, INSERT_RESULT_PCB, INSERT_CHECK_PCB, INSERT_INCOMING_PART_BATCH, CHECK_ROUTE_BATCH, INSERT_TEST_RESULT_BATCH, GET_VERSION
 from typing import List
-from config import IS_LIVE
+from config import IS_LIVE, DEVICE_NAME, STATION_NAME, USERNAME, PASSWORD
 import time
 import secrets
 import requests
@@ -31,10 +31,10 @@ def get_token(json_body):
         }
     else:
         login_payload = {
-            "username": "11",
-            "password": "11",
-            "device_name": "USB_HUB_10003_A",
-            "station_name": "ROUTING_MPCBA"
+            "username": USERNAME,
+            "password": PASSWORD,
+            "device_name": DEVICE_NAME,
+            "station_name": STATION_NAME
         }
 
     response = requests.post(LOGIN, json=login_payload)
@@ -88,8 +88,9 @@ async def insert_check_router(request: Request):
         raise HTTPException(status_code=400, detail=str(e))
 
  
+
 @router.post("/insert_solder")
-async def scan_item(request: Request):
+async def insert_solder_maftuh(request: Request):
     try:
         json_body = await request.json()
         token = get_token(json_body)
@@ -99,46 +100,65 @@ async def scan_item(request: Request):
 
         incoming_data = {
             "scan_item": json_body.get("scan_item"),
-            "data_name": json_body.get("data_name"),
+            "data_name": 'J69_ADAPT_PCBA',
             "qty_per_batch": json_body.get("qty_per_batch")
         }
+
         response_incoming = requests.post(INSERT_INCOMING_PART_BATCH, json=incoming_data, headers={"Authorization": token_auth, "Content-Type": "application/json"})
-        response_json = response_incoming.json()
-
-        check_data = []
-        test_data = []
-
-        if response_json.get("success") and "save_data" in response_json:
-            for item in response_json["save_data"].get("scan_items", []):
-                data_version_url = f"{GET_VERSION}?scan_item={item.get('scan_item')}"
+        response_incoming.raise_for_status()
+        response_incoming_json = response_incoming.json()
+        
+        if 'save_data' in response_incoming_json:
+            save_data = response_incoming_json.get("save_data", {})
+            save_data = [{
+                "data_name": "scan_items",
+                "data_value": save_data.get("scan_items", [])
+            }]
+            check_data = {
+                        "scan_item": json_body.get("scan_item"),
+                        "data_name": 'J69_ADAPT_PCBA',
+                        "device_name": json_body.get("device_name"),
+                        "station_name": json_body.get("station_name"),
+                        "save_data": save_data
+                    }
+            response_check_route = requests.post(CHECK_ROUTE_BATCH, json=check_data,
+                                                 headers={"Authorization": token_auth, "Content-Type": "application/json"})
+            response_check_route.raise_for_status()
+            
+            if response_check_route.json().get('success', False):
+                data_version_url = f"{GET_VERSION}?scan_item={json_body.get('scan_item')}"
                 data_version_response = requests.get(data_version_url)
-                data_version = data_version_response.json()
 
-                check_route_data = {
-                    "scan_item": item.get("scan_item"),
-                    "data_name": item.get("data_name"),
-                    "device_name": json_body.get("device_name"),
-                    "station_name": json_body.get("station_name"),
-                    "save_data": item.get("save_data", [])
-                }
-                check_data.append(check_route_data)
+                data_version_response.raise_for_status()
+                work_order_no = data_version_response.json().get("work_order_no")
+                test_data = {
+                            "key_item": json_body.get("key_item"),
+                            "device_name": json_body.get("device_name"),
+                            "station_name": json_body.get("station_name"),
+                            "is_pass": json_body.get("is_pass"),
+                            "log_path": json_body.get("log_path", ""),
+                            "work_order_no": work_order_no,
+                            "scan_item": json_body.get('scan_item'),
+                            "save_data": save_data,
+                            "error_code": '99999',
+                        }
 
-                test_result_data = {
-                    "key_item": json_body.get("key_item"),
-                    "device_name": json_body.get("device_name"),
-                    "station_name": json_body.get("station_name"),
-                    "is_pass": json_body.get("is_pass"),
-                    "log_path": json_body.get("log_path"),
-                    "work_order_no": data_version.get("work_order_no"),
-                    "scan_item": item.get("scan_item"),
-                    "save_data": item.get("save_data", [])
-                }
-                test_data.append(test_result_data)
-
-        response_check_route = requests.post(CHECK_ROUTE_BATCH, json=check_data, headers={"Authorization": token_auth, "Content-Type": "application/json"})
-        response_test_result = requests.post(INSERT_TEST_RESULT_BATCH, json=test_data, headers={"Authorization": token_auth, "Content-Type": "application/json"})
-
-        return JSONResponse(status_code=200, content={"status": "success", "message": "Data successfully added to API!", "data_incoming": response_json, "data_check": response_check_route.json(), "data_result": response_test_result.json()})
+                response_test_result = requests.post(INSERT_TEST_RESULT_BATCH, json=test_data, headers={"Authorization": token_auth, "Content-Type": "application/json"})
+                response_test_result.raise_for_status()
+                return JSONResponse(status_code=200,
+                                    content={"status": "success", "message": "Data successfully added to API!",
+                                             "data_incoming": response_incoming_json, "data_check": response_check_route.json(),
+                                             "data_result": response_test_result.json()})
+            else:
+                return JSONResponse(status_code=200,
+                                    content={"status": "success", "message": "FAIL check route",
+                                             "data_incoming": response_incoming_json, "data_check": response_check_route.json(),
+                                             })
+        else:
+            return JSONResponse(status_code=200,
+                                content={"status": "success", "message": "FAIL get family",
+                                         "data_incoming": response_incoming_json})
     except requests.exceptions.RequestException as e:
         raise HTTPException(status_code=400, detail=str(e))
+
 
