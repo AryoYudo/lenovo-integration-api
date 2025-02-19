@@ -12,6 +12,15 @@ router = APIRouter()
 secret_key = secrets.token_hex(32)
 token_cache = {"token": None, "expires_at": 0}
 
+class CheckRouteRequest(BaseModel):
+    key_item: str
+    data_name: str
+    device_name: str
+    station_name: str
+    is_pass: bool
+    error_code: str
+    log_path: str
+    log_data: str
 
 def mes_api_call_wrapper(url, json=None, headers=None, is_get=False):
     print('[CALL API]', url)
@@ -59,30 +68,28 @@ def get_token(json_body):
     token_cache["expires_at"] = int(time.time()) + 3600  # Misal token berlaku 1 jam (3600 detik)
     return token_cache["token"]
 
-
 @router.post("/insert_check_router")
-async def insert_check_router(request: Request):
-    json_body = await request.json()
+async def insert_check_router(request: Request, json_body: CheckRouteRequest):
     token = get_token(json_body)
     token_auth = 'token ' + token
 
     check_route = {
-        "scan_item": json_body.get("key_item"),
-        "data_name": json_body.get("data_name"),
-        "device_name": json_body.get("device_name"),
-        "station_name": json_body.get("station_name")
+        "scan_item": json_body.key_item,
+        "data_name": json_body.data_name,
+        "device_name": json_body.device_name,
+        "station_name": json_body.station_name
     }
     checkroute_resp = mes_api_call_wrapper(INSERT_CHECK_PCB, json=check_route, headers={"Authorization": token_auth, "Content-Type": "application/json"})
 
     if checkroute_resp.json()['success']:
         test_result = {
-            "key_item": json_body.get("key_item"),
-            "station_name": json_body.get("station_name"),
-            "device_name": json_body.get("device_name"),
-            "is_pass": json_body.get("is_pass"),
-            "error_code": json_body.get("error_code"),
-            "log_path": json_body.get("log_path"),
-            "log_data": json_body.get("log_data"),
+            "key_item": json_body.key_item,
+            "station_name": json_body.station_name,
+            "device_name": json_body.device_name,
+            "is_pass": json_body.is_pass,
+            "error_code": json_body.error_code,
+            "log_path": json_body.log_path,
+            "log_data": json_body.log_data,
         }
         insert_resp = mes_api_call_wrapper(INSERT_RESULT_PCB, json=test_result, headers={"Authorization": token_auth, "Content-Type": "application/json"})
         return JSONResponse(
