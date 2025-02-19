@@ -1,84 +1,65 @@
-# 📌 Dokumentasi API SFIS
+# 📌 Dokumentasi Menjalankan FastAPI
 
-Dokumentasi ini berisi daftar endpoint API untuk sistem SFIS. Setiap request memerlukan **Authorization** yang harus dikirim dalam header (bukan Bearer Auth).
+Dokumentasi ini berisi langkah-langkah untuk menjalankan proyek FastAPI dengan benar.
 
 ## 🚀 Menjalankan FastAPI
 
-1. Masuk ke direktori project.
-2. Aktifkan virtual environment:
-   ```sh
-   source venv/bin/activate  # Untuk Linux/Mac
-   venv\Scripts\activate  # Untuk Windows
-   ```
-3. Pindah ke direktori `mysatnusa`:
-   ```sh
-   cd mysatnusa
-   ```
-4. Jalankan server menggunakan Uvicorn:
-   ```sh
-   uvicorn core.main:app --port=8080
-   ```
+### 1. Membuat Virtual Environment
+Sebelum menjalankan proyek, buat virtual environment terlebih dahulu.
 
-## 🔐 Autentikasi
-Setiap endpoint memerlukan header `Authorization` dengan token yang didapat dari endpoint login.
-
-## 📌 Endpoint API
-
-### 1️⃣ Login
-**URL:** `http://127.0.0.1:8080/sfis/login`
-
-**Metode:** `POST`
-
-**Body:**
-```json
-{
-    "username": "test", 
-    "password": "11",
-    "device_name": " DSY_Test_1002",
-    "station_name": "Autoscrew"
-}
+```sh
+python -m venv venv
 ```
+
+Aktifkan virtual environment:
+- **Linux/Mac:**
+  ```sh
+  source venv/bin/activate
+  ```
+- **Windows:**
+  ```sh
+  venv\Scripts\activate
+  ```
+
+### 2. Menginstal Dependensi
+Setelah virtual environment aktif, instal semua library yang diperlukan:
+
+```sh
+pip install -r requirements.txt
+```
+
+### 3. Masuk ke Direktori Proyek
+Pindah ke folder proyek `mysatnusa`:
+
+```sh
+cd mysatnusa
+```
+
+### 4. Menjalankan Server FastAPI
+Gunakan Uvicorn untuk menjalankan server:
+
+- Dengan port 8080:
+  ```sh
+  uvicorn core.main:app --port=8080
+  ```
+- Dengan port 8000 (default):
+  ```sh
+  uvicorn core.main:app --port=8000
+  ```
+
+## 🔗 Endpoint API
+Dokumentasi API dapat diakses setelah server berjalan.
+
+Untuk melihat dokumentasi lebih lengkap, silakan buka:
+- `http://localhost/docs` untuk Swagger UI
+- `http://localhost/redoc` untuk ReDoc
 
 ---
 
-### 2️⃣ Incoming Part
-**URL:** `http://127.0.0.1:8080/sfis/insert_solder`
+**Catatan:**
+- Pastikan `requirements.txt` telah diperbarui dengan semua dependensi yang dibutuhkan.
+- Pastikan Anda menggunakan Python versi yang sesuai dengan proyek ini.
 
-**Metode:** `POST`
+Selamat coding! 🚀
 
-**Body:**
-```json
-{
-    "scan_item": "P45001412546AD24072000000098",
-    "data_name": "ISN",
-    "qty_per_batch": 4,
-    "device_name": "Device_ABC",
-    "station_name": "Station_123",
-    "key_item": "P45001412546AD24072000000098",
-    "is_pass": true,
-    "log_path": "",
-    "work_order_no": ""
-}
-```
-
----
-
-### 3️⃣ Check Route Batch
-**URL:** `http://127.0.0.1:8080/sfis/insert_check_router`
-
-**Metode:** `POST`
-
-**Body:**
-```json
-{
-    "key_item": "P45001412546AD24072000000098",
-    "station_name": "ISN_INPUT",
-    "device_name": "DSY_Test_1001",
-    "is_pass": true,        
-    "error_code": "",        
-    "log_path": "",        
-    "log_data": "",        
-    "scan_item": "",
-    "data_name": ""
-}
-```
+    
