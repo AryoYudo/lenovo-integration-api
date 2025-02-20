@@ -1,11 +1,11 @@
 import uvicorn
 from fastapi import FastAPI
-from src.pcb_v2 import router as pcb_v2
+from src.route import router as route
 
 app = FastAPI(title="Multi-App FastAPI")
 
 # Menyertakan semua router dari aplikasi yang berbeda
-app.include_router(pcb_v2, prefix="/sfis", tags=["pcb_v2"])
+app.include_router(route, prefix="/sfis", tags=["pcb_v2"])
 
 
 if __name__ == '__main__':
