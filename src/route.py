@@ -40,16 +40,17 @@ async def insert_check_router(request: Request, json_body: CheckRouteRequest):
             content={"status": "success", "message": "Data successfully added to API!", "data": insert_resp.json()})
 
 @router.post("/insert_solder")
-async def insert_solder(request: Request):
-    json_body = await request.json()
+async def insert_solder(request: Request, json_body: InsertSolderRequest):
     token = get_token(json_body)
     token_auth = 'token ' + token
     headers = {"Authorization": token_auth, "Content-Type": "application/json"}
+
     incoming_data = {
-        "scan_item": json_body.get("scan_item"),
+        "scan_item": json_body.scan_item,
         "data_name": 'J69_ADAPT_PCBA',
-        "qty_per_batch": json_body.get("qty_per_batch")
+        "qty_per_batch": json_body.qty_per_batch
     }
+
     incoming_response = mes_api_call_wrapper(INSERT_INCOMING_PART_BATCH, json=incoming_data, headers=headers)
     incoming_response_json = incoming_response.json()
     save_data = incoming_response_json.get("save_data")
@@ -61,10 +62,10 @@ async def insert_solder(request: Request):
         "data_value": save_data.get("scan_items", [])
     }]
     check_data = {
-        "scan_item": json_body.get("scan_item"),
+        "scan_item": json_body.scan_item,
         "data_name": 'J69_ADAPT_PCBA',
-        "device_name": json_body.get("device_name"),
-        "station_name": json_body.get("station_name"),
+        "device_name": json_body.device_name,
+        "station_name": json_body.station_name,
         "save_data": save_data
     }
     check_route_response = mes_api_call_wrapper(CHECK_ROUTE_BATCH, json=check_data, headers=headers)
@@ -72,7 +73,7 @@ async def insert_solder(request: Request):
     if not check_route_response_json.get("success", False):
         raise HTTPException(status_code=check_route_response.status_code, detail=str(check_route_response.json()))
 
-    data_version_url = f"{GET_VERSION}?scan_item={json_body.get('scan_item')}"
+    data_version_url = f"{GET_VERSION}?scan_item={json_body.scan_item}"
     data_version_response = mes_api_call_wrapper(data_version_url, is_get=True)
 
     if data_version_response.status_code != 200:
@@ -80,13 +81,13 @@ async def insert_solder(request: Request):
 
     work_order_no = data_version_response.json().get("work_order_no")
     test_data = {
-        "key_item": json_body.get("key_item"),
-        "device_name": json_body.get("device_name"),
-        "station_name": json_body.get("station_name"),
-        "is_pass": json_body.get("is_pass"),
-        "log_path": json_body.get("log_path", ""),
+        "key_item": json_body.key_item,
+        "device_name": json_body.device_name,
+        "station_name": json_body.station_name,
+        "is_pass": json_body.is_pass,
+        "log_path": json_body.log_path,
         "work_order_no": work_order_no,
-        "scan_item": json_body.get('scan_item'),
+        "scan_item": json_body.scan_item,
         "save_data": save_data,
         "error_code": '99999',
     }
