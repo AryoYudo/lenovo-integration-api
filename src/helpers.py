@@ -1,13 +1,13 @@
 import time
 import requests  
 from fastapi import HTTPException  
+from src.config import USERNAME, PASSWORD
 
 token_cache = {"token": None, "expires_at": 0}
 def get_token(json_body):
     """Mengambil token dari cache atau login jika expired"""
     global token_cache
 
-    # Jika token masih valid, gunakan token yang sudah ada
     if token_cache["token"] and token_cache["expires_at"] > time.time():
         return token_cache["token"]
 
@@ -17,7 +17,6 @@ def get_token(json_body):
         "device_name": json_body.get('device_name'),
         "station_name": json_body.get('station_name')
     }
-    # response = requests.post(LOGIN, json=login_payload)
     response = mes_api_call_wrapper(LOGIN, json=login_payload)
 
     token_data = response.json()
