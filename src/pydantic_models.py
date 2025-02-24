@@ -1,3 +1,5 @@
+from pydantic import BaseModel
+
 class CheckRouteRequest(BaseModel):
     key_item: str
     data_name: str
