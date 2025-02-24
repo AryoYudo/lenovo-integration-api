@@ -12,8 +12,8 @@ import requests
 router = APIRouter()
 secret_key = secrets.token_hex(32)
 
-@router.post("/insert_check_router")
-async def insert_check_router(request: Request, json_body: CheckRouteRequest):
+@router.post("/insert_check")
+async def insert_check(request: Request, json_body: CheckRouteRequest):
     token = get_token(json_body)
     token_auth = 'token ' + token
 
@@ -35,6 +35,7 @@ async def insert_check_router(request: Request, json_body: CheckRouteRequest):
             "log_path": json_body.log_path,
             "log_data": json_body.log_data,
         }
+        
         insert_resp = mes_api_call_wrapper(INSERT_RESULT, json=test_result, headers={"Authorization": token_auth, "Content-Type": "application/json"})
         return JSONResponse(
             status_code=200,

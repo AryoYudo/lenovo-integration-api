@@ -1,17 +1,15 @@
 IS_LIVE = False
+BASE_URL = "http://nusames.lenovo.satnusa.com"
 
 if IS_LIVE:
-    LOGIN = "http://nusames.desay.satnusa.com:30401/sfis/login/"
-    INSERT_RESULT = "http://nusames.desay.satnusa.com:30401/sfis/test_result/"
-    INSERT_CHECK = "http://nusames.desay.satnusa.com:30401/sfis/check_route/"
-
+    PORT = "30401"
     USERNAME = '11'
     PASSWORD = '11'
-
 else:
-    LOGIN = "http://nusames.desay.satnusa.com:32401/sfis/login/"
-    INSERT_RESULT = "http://nusames.desay.satnusa.com:32401/sfis/test_result/"
-    INSERT_CHECK = "http://nusames.desay.satnusa.com:32401/sfis/check_route/"
-
+    PORT = "32401"
     USERNAME = 'test'
     PASSWORD = '11'
+
+LOGIN = f"{BASE_URL}:{PORT}/sfis/login/"
+INSERT_RESULT = f"{BASE_URL}:{PORT}/sfis/test_result/"
+INSERT_CHECK = f"{BASE_URL}:{PORT}/sfis/check_route/"
