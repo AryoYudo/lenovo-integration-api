@@ -28,14 +28,7 @@ Setelah virtual environment aktif, instal semua library yang diperlukan:
 pip install -r requirements.txt
 ```
 
-### 3. Masuk ke Direktori Proyek
-Pindah ke folder proyek `mysatnusa`:
-
-```sh
-cd mysatnusa
-```
-
-### 4. Menjalankan Server FastAPI
+### 3. Menjalankan Server FastAPI
 Gunakan Uvicorn untuk menjalankan server:
 
 - Dengan port 8080:
