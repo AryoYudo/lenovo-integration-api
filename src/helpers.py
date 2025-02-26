@@ -15,9 +15,10 @@ def get_token(json_body):
     login_payload = {
         "username": USERNAME,
         "password": PASSWORD,
-        "device_name": json_body.get('device_name'),
-        "station_name": json_body.get('station_name')
+        "device_name": json_body.device_name,
+        "station_name": json_body.station_name
     }
+    
     response = mes_api_call_wrapper(LOGIN, json=login_payload)
 
     token_data = response.json()

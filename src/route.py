@@ -14,8 +14,8 @@ secret_key = secrets.token_hex(32)
 
 @router.post("/insert_check")
 async def insert_check(request: Request, json_body: CheckRouteRequest):
-    token = get_token(json_body)
-    token_auth = 'token ' + token
+    # token = get_token(json_body)
+    # token_auth = 'token ' + token
 
     check_route = {
         "scan_item": json_body.key_item,
@@ -23,7 +23,7 @@ async def insert_check(request: Request, json_body: CheckRouteRequest):
         "device_name": json_body.device_name,
         "station_name": json_body.station_name
     }
-    checkroute_resp = mes_api_call_wrapper(INSERT_CHECK, json=check_route, headers={"Authorization": token_auth, "Content-Type": "application/json"})
+    checkroute_resp = mes_api_call_wrapper(INSERT_CHECK, json=check_route)
 
     if checkroute_resp.json()['success']:
         test_result = {
@@ -36,7 +36,7 @@ async def insert_check(request: Request, json_body: CheckRouteRequest):
             "log_data": json_body.log_data,
         }
         
-        insert_resp = mes_api_call_wrapper(INSERT_RESULT, json=test_result, headers={"Authorization": token_auth, "Content-Type": "application/json"})
+        insert_resp = mes_api_call_wrapper(INSERT_RESULT, json=test_result)
         return JSONResponse(
             status_code=200,
             content={"status": "success", "message": "Data successfully added to API!", "data": insert_resp.json()})
