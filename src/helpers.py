@@ -18,6 +18,7 @@ def get_token(json_body):
         "device_name": json_body.device_name,
         "station_name": json_body.station_name
     }
+    
     response = mes_api_call_wrapper(LOGIN, json=login_payload)
 
     token_data = response.json()
@@ -40,11 +41,10 @@ def mes_api_call_wrapper(url, json=None, headers=None, is_get=False):
             mes_resp = requests.post(url, json=json)
 
     print('[API OUTPUT]', mes_resp.text)
-    if mes_resp.status_code not in [200, 201]:
+    if mes_resp.status_code != 200:
         try:
             error_msg = f"[{url}] {mes_resp.json().get('message')}"
         except Exception as e:
             error_msg = f"[{url}] {mes_resp.text}"
         raise HTTPException(status_code=mes_resp.status_code, detail=error_msg)
-
     return mes_resp

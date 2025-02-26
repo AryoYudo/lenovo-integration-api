@@ -1,24 +1,20 @@
-# 📌 Dokumentasi Menjalankan FastAPI
+# Dokumentasi Menjalankan FastAPI
 
 Dokumentasi ini berisi langkah-langkah untuk menjalankan proyek FastAPI dengan benar.
 
-## 🚀 Menjalankan FastAPI
+## Menjalankan FastAPI
 
 ### 1. Membuat Virtual Environment
 Sebelum menjalankan proyek, buat virtual environment terlebih dahulu.
 
 ```sh
-python -m venv venv
+conda --name venv 
 ```
 
 Aktifkan virtual environment:
-- **Linux/Mac:**
-  ```sh
-  source venv/bin/activate
-  ```
 - **Windows:**
   ```sh
-  venv\Scripts\activate
+  conda activate venv
   ```
 
 ### 2. Menginstal Dependensi
@@ -31,16 +27,12 @@ pip install -r requirements.txt
 ### 3. Menjalankan Server FastAPI
 Gunakan Uvicorn untuk menjalankan server:
 
-- Dengan port 8080:
+- Dengan port 8000:
   ```sh
-  uvicorn core.main:app --port=8080
-  ```
-- Dengan port 8000 (default):
-  ```sh
-  uvicorn core.main:app --port=8000
+  uvicorn main:app --reload
   ```
 
-## 🔗 Endpoint API
+## Endpoint API
 Dokumentasi API dapat diakses setelah server berjalan.
 
 Untuk melihat dokumentasi lebih lengkap, silakan buka:
