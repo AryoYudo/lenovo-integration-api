@@ -15,6 +15,7 @@ else:
 # LOGIN = f"{BASE_URL}:{PORT}/sfis/login/"
 # INSERT_RESULT = f"{BASE_URL}:{PORT}/sfis/test_result/"
 # INSERT_CHECK = f"{BASE_URL}:{PORT}/sfis/check_route/"
+GET_VERSION = "http://nusames.desay.satnusa.com:32401/sfis/get_version2/"
 
 # Api Testing
 LOGIN = f"{BASE_URL}login/"

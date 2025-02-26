@@ -1,7 +1,7 @@
 from fastapi import HTTPException, Request, APIRouter
 from fastapi.responses import JSONResponse
 import json
-from src.config import LOGIN, INSERT_RESULT, INSERT_CHECK
+from src.config import LOGIN, INSERT_RESULT, INSERT_CHECK, GET_VERSION
 from src.config import USERNAME, PASSWORD
 from pydantic import BaseModel
 from src.pydantic_models import CheckRouteRequest, InsertSolderRequest
@@ -14,8 +14,8 @@ secret_key = secrets.token_hex(32)
 
 @router.post("/insert_check")
 async def insert_check(request: Request, json_body: CheckRouteRequest):
-    # token = get_token(json_body)
-    # token_auth = 'token ' + token
+    token = get_token(json_body)
+    token_auth = 'token ' + token
 
     check_route = {
         "scan_item": json_body.key_item,
@@ -23,7 +23,12 @@ async def insert_check(request: Request, json_body: CheckRouteRequest):
         "device_name": json_body.device_name,
         "station_name": json_body.station_name
     }
-    checkroute_resp = mes_api_call_wrapper(INSERT_CHECK, json=check_route)
+    checkroute_resp = mes_api_call_wrapper(INSERT_CHECK, json=check_route, headers={"Authorization": token_auth, "Content-Type": "application/json"})
+
+    get_version = f"{GET_VERSION}?scan_item={json_body.key_item}"
+    get_version_response = mes_api_call_wrapper(get_version, is_get=True)
+
+    work_order_no = get_version_response.json().get('work_order_no')
 
     if checkroute_resp.json()['success']:
         test_result = {
@@ -34,9 +39,10 @@ async def insert_check(request: Request, json_body: CheckRouteRequest):
             "error_code": json_body.error_code,
             "log_path": json_body.log_path,
             "log_data": json_body.log_data,
+            "work_order_no": json_body.work_order_no,
         }
         
-        insert_resp = mes_api_call_wrapper(INSERT_RESULT, json=test_result)
+        insert_resp = mes_api_call_wrapper(INSERT_RESULT, json=test_result, headers={"Authorization": token_auth, "Content-Type": "application/json"})
         return JSONResponse(
             status_code=200,
             content={"status": "success", "message": "Data successfully added to API!", "data": insert_resp.json()})
