@@ -1,4 +1,5 @@
 import sys
+import tkinter as tk
 import customtkinter as ctk
 from PIL import Image, ImageTk
 
@@ -20,12 +21,12 @@ class SolderInspectionApp(ctk.CTk):
 
         # Grid Layout untuk elemen utama
         grid_frame = ctk.CTkFrame(main_frame)
-        grid_frame.pack(fill="both", expand=True, padx=10, pady=10)
-        grid_frame.grid_columnconfigure((0, 1, 2, 3), weight=1)
-        grid_frame.grid_rowconfigure((0, 1), weight=1)
+        grid_frame.pack(fill="both", expand=True, padx=5, pady=5)
+        grid_frame.grid_columnconfigure((0, 1, 2, 3), weight=10)
+        grid_frame.grid_rowconfigure((0, 1), weight=109)
 
         # Gambar kamera
-        self.create_camera_label(grid_frame, 0, 0)
+        self.create_camera_label(grid_frame, 1, 0)
 
         # Statistik
         self.create_stat_label("GOOD", "1127", "#199C42", grid_frame, 0, 1)
@@ -34,8 +35,8 @@ class SolderInspectionApp(ctk.CTk):
         self.create_stat_label("YIELD", "95%", "#348CD9", grid_frame, 1, 2)
 
         # Label Top Defect
-        self.top_defect_label = ctk.CTkLabel(grid_frame, text="TOP 10 DEFECT", fg_color="white", text_color="black", corner_radius=10, font=("Arial", 16, "bold"), height=100)
-        self.top_defect_label.grid(row=0, column=3, rowspan=2, sticky="nsew", padx=5, pady=5)
+        self.top_defect_label = tk.Label( grid_frame, text="TOP 10 DEFECT", bg="white", fg="black", font=("Arial", 16, "bold"), height=20, anchor="n" )
+        self.top_defect_label.grid(row=0, column=3, rowspan=2, sticky="nsew", padx=10, pady=5)
 
         # Table Widget
         self.table = ctk.CTkFrame(main_frame)
@@ -47,11 +48,8 @@ class SolderInspectionApp(ctk.CTk):
         footer.pack(fill="x")
 
     def create_stat_label(self, title, value, color, parent, row, col):
-        main_frame = ctk.CTkFrame(parent, fg_color="white", corner_radius=0)
-        main_frame.grid(row=row, column=col, sticky="nsew", padx=1, pady=1)
-            # Frame atas dengan radius di bagian atas
-        top_frame = ctk.CTkFrame(main_frame, fg_color=color, corner_radius=10)
-        top_frame.pack(fill="x", side="top")
+        frame = ctk.CTkFrame(parent, fg_color="white", corner_radius=10)
+        frame.grid(row=row, column=col, sticky="nsew", padx=5, pady=5)
 
         title_label = ctk.CTkLabel(frame, text=title, fg_color=color, text_color="white", font=("Arial", 28, "bold"), height=40)
         title_label.pack(fill="x")
@@ -61,7 +59,7 @@ class SolderInspectionApp(ctk.CTk):
 
     def create_camera_label(self, parent, row, col):
         frame = ctk.CTkFrame(parent, fg_color="white", corner_radius=10)
-        frame.grid(row=row, column=col, sticky="nsew", padx=5, pady=5)
+        frame.grid(row=0, column=0, rowspan=2, sticky="nsew", padx=5, pady=5)
 
         image_label = ctk.CTkLabel(frame, text="")
         image_label.pack()
@@ -73,7 +71,7 @@ class SolderInspectionApp(ctk.CTk):
         except:
             image_label.configure(text="[No Image]")
 
-        text_label = ctk.CTkLabel(frame, text="Camera Inspection", text_color="black", font=("Arial", 32, "bold"))
+        text_label = ctk.CTkLabel(frame, text="Camera Ianspection", text_color="black", font=("Arial", 32, "bold"))
         text_label.pack()
 
     def fill_table(self):
