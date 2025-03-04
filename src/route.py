@@ -1,10 +1,10 @@
 from fastapi import HTTPException, Request, APIRouter
 from fastapi.responses import JSONResponse
 import json
-from src.config import INSERT_RESULT, INSERT_CHECK, GET_VERSION, INSERT_INCOMING_PART_BATCH, CHECK_ROUTE_BATCH, INSERT_TEST_RESULT_BATCH
+from src.config import INSERT_RESULT, INSERT_CHECK
 from src.config import USERNAME, PASSWORD
 from pydantic import BaseModel
-from src.pydantic_models import CheckRouteRequest, InsertSolderRequest
+from src.pydantic_models import CheckRouteRequest
 from src.helpers import get_token, mes_api_call_wrapper
 import secrets
 import requests
