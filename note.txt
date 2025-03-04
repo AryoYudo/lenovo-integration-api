@@ -1,0 +1,13 @@
+# 38990ce2d9bde12b43b82afbcdd4714e99257867
+#
+
+
+# {
+#   "key_item": "8s123456",
+#   "station_name": "ISN_INPUT",
+#   "device_name": "DSY_Test_1001",
+#   "is_pass": true,
+#   "error_code": "E000",
+#   "log_path": "/logs/2025/02/27/log_12345.txt",
+#   "log_data": "Voltage within acceptable range: 220V"
+# }
