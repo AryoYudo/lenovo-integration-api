@@ -41,10 +41,11 @@ def mes_api_call_wrapper(url, json=None, headers=None, is_get=False):
             mes_resp = requests.post(url, json=json)
 
     print('[API OUTPUT]', mes_resp.text)
-    if mes_resp.status_code != 200:
+    if mes_resp.status_code not in {200, 201}:
         try:
             error_msg = f"[{url}] {mes_resp.json().get('message')}"
         except Exception as e:
             error_msg = f"[{url}] {mes_resp.text}"
+        print('[API RAISE OUTPUT]', error_msg)
         raise HTTPException(status_code=mes_resp.status_code, detail=error_msg)
     return mes_resp
