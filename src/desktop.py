@@ -24,12 +24,16 @@ class SolderInspectionApp(ctk.CTk):
         # Grid Layout untuk elemen utama
         grid_frame = ctk.CTkFrame(main_frame)
         grid_frame.pack(fill="both", expand=True, padx=5, pady=5)
+
+        # Konfigurasi kolom
         grid_frame.grid_columnconfigure(0, weight=2)
         grid_frame.grid_columnconfigure(1, weight=1)
         grid_frame.grid_columnconfigure(2, weight=1)
         grid_frame.grid_columnconfigure(3, weight=0)
-        grid_frame.grid_rowconfigure(0, weight=0)
-        # grid_frame.grid_rowconfigure(1, weight=3)
+
+        grid_frame.grid_rowconfigure(0, weight=1, minsize=200)  # Row 1 tetap kecil
+        grid_frame.grid_rowconfigure(1, weight=5)  # Row 2 lebih dominan
+        grid_frame.grid_propagate(False)  
 
         # Gambar kamera
         self.create_camera_label(grid_frame, 0, 0)
@@ -42,13 +46,13 @@ class SolderInspectionApp(ctk.CTk):
 
         # Frame untuk Top 10 Defect Chart
         self.top_defect_frame = tk.Frame(grid_frame, bg="white") 
-        self.top_defect_frame.grid(row=0, column=3, rowspan=2, sticky="nsew", padx=10, pady=5)
+        self.top_defect_frame.grid(row=0, column=3, rowspan=2, sticky="nsew", padx=5, pady=5)
         self.create_chart(self.top_defect_frame)
 
         # Table Widget
         self.table = ctk.CTkFrame(main_frame)
         self.table.pack(fill="both", expand=True, padx=10, pady=10)
-        self.fill_table()
+        self.create_table(grid_frame, 3, 0)
 
         # Footer
         footer = ctk.CTkLabel(main_frame, text="NG", fg_color="red", text_color="white", font=("Arial", 20, "bold"), height=40)
@@ -61,7 +65,7 @@ class SolderInspectionApp(ctk.CTk):
         title_label = ctk.CTkLabel(frame, text=title, fg_color=color, text_color="white", font=("Arial", 24, "bold"), height=50)
         title_label.pack(fill="x")
 
-        value_label = ctk.CTkLabel(frame, text=value, text_color="black", font=("Arial", 30, "bold"), height=100)
+        value_label = ctk.CTkLabel(frame, text=value, text_color="black", font=("Arial", 40, "bold"), height=100)
         value_label.pack(fill="both", expand=True, pady=5)
 
     def create_camera_label(self, parent, row, col):
@@ -79,7 +83,7 @@ class SolderInspectionApp(ctk.CTk):
             img = ImageTk.PhotoImage(image)
             image_label.configure(image=img)
             image_label.image = img
-        except:
+        except: 
             image_label.configure(text="[No Image]")
 
         text_label = ctk.CTkLabel(framein, text="Camera Inspection", text_color="black", font=("Arial", 18, "bold"))
@@ -102,7 +106,23 @@ class SolderInspectionApp(ctk.CTk):
         canvas.draw()
         canvas.get_tk_widget().pack(fill="both", expand=True, padx=10, pady=10)
 
-    def fill_table(self):
+    def create_table(self, parent, row, col):
+        frame = ctk.CTkFrame(parent, fg_color="white", corner_radius=10)
+        frame.grid(row=row, column=col, sticky="nsew", padx=5, pady=5)
+
+        framein = ctk.CTkFrame(frame, fg_color="#D3D3D3", corner_radius=10)
+        framein.pack(fill="both", expand=True, padx=10, pady=10)
+
+        # Header
+        headers = ["Component", "Part Number", "Defect Description"]
+        header_frame = ctk.CTkFrame(framein, fg_color="#E0E0E0")
+        header_frame.pack(fill="x", padx=5, pady=2)
+
+        for col, text in enumerate(headers):
+            ctk.CTkLabel(header_frame, text=text, width=140, anchor="w",
+                        font=("Arial", 12, "bold"))\
+                .pack(side="left", padx=5, pady=5)
+
         data = [
             ("PCB-REELID", "PN-1234", "Short Circuit"),
             ("Resistor", "PN-5678", "Solder Ball"),
@@ -111,14 +131,16 @@ class SolderInspectionApp(ctk.CTk):
             ("Connector", "PN-1415", "Missing Component"),
             ("Diode", "PN-1617", "Tombstone")
         ]
-        
-        for row, (part, num, defect) in enumerate(data):
-            row_frame = ctk.CTkFrame(self.table, fg_color="white", corner_radius=5)
-            row_frame.pack(fill="x", padx=5, pady=2)
-            
-            ctk.CTkLabel(row_frame, text=part, width=120, anchor="w").pack(side="left", padx=5)
-            ctk.CTkLabel(row_frame, text=num, width=100, anchor="w").pack(side="left", padx=5)
-            ctk.CTkLabel(row_frame, text=defect, width=150, anchor="w").pack(side="left", padx=5)
+
+        # Isi Data
+        for part, num, defect in data:
+            row_frame = ctk.CTkFrame(framein, fg_color="white")
+            row_frame.pack(fill="x", padx=5, pady=1)
+
+            ctk.CTkLabel(row_frame, text=part, width=140, anchor="w").pack(side="left", padx=5)
+            ctk.CTkLabel(row_frame, text=num, width=140, anchor="w").pack(side="left", padx=5)
+            ctk.CTkLabel(row_frame, text=defect, width=200, anchor="w").pack(side="left", padx=5)
+
 
 if __name__ == '__main__':
     ctk.set_appearance_mode("light")
